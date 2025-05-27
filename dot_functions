@@ -1,0 +1,11 @@
+function homestead() {
+  if [ -d ~/Homestead ]; then
+    ( cd ~/Homestead && vagrant $* )
+  else
+    echo "Homestead is missing please install!"
+  fi
+}
+
+function gi() {
+  curl -L -s https://www.gitignore.io/api/\$@
+}
