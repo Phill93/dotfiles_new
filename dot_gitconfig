@@ -1,6 +1,6 @@
 [user]
 	name = Daniel Bacher
-	email = daniel.bacher@kit.edu
+	email = {{ .email }}
 	signingkey = 0DE57C23EDD1CE59
 [core]
   	editor = vim
