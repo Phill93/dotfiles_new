@@ -1,0 +1,23 @@
+alias nano=vim
+{{- if lookPath "bat"}}
+alias cat=bat
+{{- end }}
+{{- if lookPath "prettyping"}}
+alias ping=prettyping
+{{- end }}
+{{- if lookPath "assh"}}
+alias ssh="assh wrapper ssh --"
+{{- end }}
+{{- if lookPath "kubectl"}}
+alias kak="kubectl apply -k"
+{{- end}}
+
+{{/* work related stuff */}}
+{{- if .work}}
+alias pass_priv="PASSWORD_STORE_DIR=~/.password_store_privat pass"
+{{- end }}
+
+{{/* mac related stuff */}}
+{{- if eq .chezmoi.os "darwin" }}
+alias beep="afplay -r 0.5 /System/Library/Sounds/Purr.aiff"
+{{- end}}

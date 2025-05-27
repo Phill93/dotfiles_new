@@ -1,9 +1,0 @@
-alias nano=vim
-alias cat=bat
-alias ping=prettyping
-alias ssh="assh wrapper ssh --"
-alias kak="kubectl apply -k"
-alias pass_priv="PASSWORD_STORE_DIR=~/.password_store_privat pass"
-alias beep="afplay -r 0.5 /System/Library/Sounds/Purr.aiff"
-alias keks="curl -i -X POST -H 'Content-Type: application/json' -d '{\"text\": \"![Spekulatius](https://suessigkeiten-shop.com/wp-content/uploads/2022/04/Ritter-Sport-Spekulatius.jpg)\", \"channel\": \"@andreas.ladanyi\", \"username\":\"Keksbäcker\"}' https://iai-mattermost.iai.kit.edu/hooks/dr5y7wb1jbn1djgrtwg91ij94c"
-alias keks2="curl -i -X POST -H 'Content-Type: application/json' -d '{\"text\": \"![Waffelschoki](https://shop.ritter-sport.de/media/image/23/b6/c4/100g_BV_Waffel_2200_D_VS_600x600.png)\", \"channel\": \"@juergen\", \"username\":\"Keksbäcker\"}' https://iai-mattermost.iai.kit.edu/hooks/dr5y7wb1jbn1djgrtwg91ij94c"
