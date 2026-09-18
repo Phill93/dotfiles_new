@@ -43,4 +43,8 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # Spaceship Settings
 SPACESHIP_USER_SHOW=true
 SPACESHIP_CHAR_SYMBOL_ROOT="#"
-SPACESHIP_SUDO_SHOW=true
+
+# fix kubectl completion
+export fpath=($ZSH_CACHE_DIR/completions/ $fpath)
+
+export PATH="$(brew --prefix python)/libexec/bin:$HOME/go/bin:$PATH"
