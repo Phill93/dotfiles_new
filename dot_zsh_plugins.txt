@@ -1,0 +1,11 @@
+# Oh My Zsh compatibility layer and selected plugins.
+getantidote/use-omz
+ohmyzsh/ohmyzsh path:plugins/git
+ohmyzsh/ohmyzsh path:plugins/sudo
+ohmyzsh/ohmyzsh path:plugins/git-extras
+ohmyzsh/ohmyzsh path:plugins/gpg-agent
+ohmyzsh/ohmyzsh path:plugins/kubectl
+ohmyzsh/ohmyzsh path:plugins/vagrant
+
+# Interactive shell enhancements.
+zsh-users/zsh-syntax-highlighting

@@ -1,5 +1,5 @@
 #!/bin/bash
 
-if ! type "assh" > /dev/null; then
+if command -v assh > /dev/null; then
   assh config build > "${HOME}/.ssh/config"
 fi
