@@ -1,6 +1,7 @@
 README.md
 install_server.sh
 {{- if (get . "server") }}
+.gitconfig
 .config/nvim/**
 .gnupg/**
 .ssh/**

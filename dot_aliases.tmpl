@@ -17,7 +17,7 @@ alias kak="kubectl apply -k"
 {{- end}}
 
 {{/* work related stuff */}}
-{{- if and (not (get . "server")) .work}}
+{{- if and (not (get . "server")) (get . "work")}}
 alias pass_priv="PASSWORD_STORE_DIR=~/.password_store_privat pass"
 {{- end }}
 

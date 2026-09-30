@@ -1,6 +1,8 @@
 [user]
 	name = Daniel Bacher
-	email = {{ .email }}
+{{ if (get . "email") }}
+	email = {{ get . "email" }}
+{{ end }}
 	{{- if not (get . "server") }}
 	signingkey = 0DE57C23EDD1CE59
 	{{- end }}
