@@ -2,10 +2,14 @@
 getantidote/use-omz
 ohmyzsh/ohmyzsh path:plugins/git
 ohmyzsh/ohmyzsh path:plugins/sudo
+{{- if not (get . "server") }}
+ohmyzsh/ohmyzsh path:plugins/pass kind:fpath
 ohmyzsh/ohmyzsh path:plugins/git-extras
 ohmyzsh/ohmyzsh path:plugins/gpg-agent
 ohmyzsh/ohmyzsh path:plugins/kubectl
 ohmyzsh/ohmyzsh path:plugins/vagrant
+{{- end }}
 
 # Interactive shell enhancements.
+zsh-users/zsh-history-substring-search
 zsh-users/zsh-syntax-highlighting

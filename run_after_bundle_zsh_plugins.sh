@@ -6,9 +6,11 @@ plugins_file="$HOME/.zsh_plugins.txt"
 static_file="$HOME/.zsh_plugins.zsh"
 
 [ -r "$plugins_file" ] || exit 0
-command -v brew >/dev/null 2>&1 || exit 0
 
-antidote_file="$(brew --prefix antidote 2>/dev/null)/share/antidote/antidote.zsh"
+antidote_file="$HOME/.antidote/antidote.zsh"
+if [ ! -r "$antidote_file" ] && command -v brew >/dev/null 2>&1; then
+  antidote_file="$(brew --prefix antidote 2>/dev/null)/share/antidote/antidote.zsh"
+fi
 [ -r "$antidote_file" ] || exit 0
 
 static_tmp="$(mktemp "${static_file}.XXXXXX")"

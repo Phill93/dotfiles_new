@@ -1,1 +1,9 @@
 README.md
+install_server.sh
+{{- if (get . "server") }}
+.config/nvim/**
+.gnupg/**
+.ssh/**
+generate_ssh.sh
+create_directorys.sh
+{{- end }}

@@ -1,19 +1,23 @@
+{{- if (get . "server") }}
+alias nano=vi
+{{- else }}
 alias nano=nvim
+{{- end }}
 {{- if lookPath "bat"}}
 alias cat=bat
 {{- end }}
 {{- if lookPath "prettyping"}}
 alias ping=prettyping
 {{- end }}
-{{- if lookPath "assh"}}
+{{- if and (not (get . "server")) (lookPath "assh")}}
 alias ssh="assh wrapper ssh --"
 {{- end }}
-{{- if lookPath "kubectl"}}
+{{- if and (not (get . "server")) (lookPath "kubectl")}}
 alias kak="kubectl apply -k"
 {{- end}}
 
 {{/* work related stuff */}}
-{{- if .work}}
+{{- if and (not (get . "server")) .work}}
 alias pass_priv="PASSWORD_STORE_DIR=~/.password_store_privat pass"
 {{- end }}
 

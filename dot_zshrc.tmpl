@@ -1,0 +1,97 @@
+export XDG_CONFIG_HOME="$HOME/.config"
+
+add_to_path() {
+  local directory
+  for directory in "$@"; do
+    [[ -d "$directory" ]] || continue
+    [[ ":$PATH:" == *":$directory:"* ]] || path=("$directory" $path)
+  done
+}
+
+load_shell_tools() {
+  local antidote_file spaceship_file python_prefix
+
+{{- if (get . "server") }}
+  antidote_file="$HOME/.antidote/antidote.zsh"
+  spaceship_file="$HOME/.zsh/spaceship/spaceship.zsh"
+{{- else }}
+  if (( ! $+commands[brew] )); then
+    print -u2 "Homebrew is not available; skipping Zsh plugins and Spaceship"
+    return
+  fi
+
+  antidote_file="$(brew --prefix antidote 2>/dev/null)/share/antidote/antidote.zsh"
+  spaceship_file="$(brew --prefix spaceship 2>/dev/null)/spaceship.zsh"
+{{- end }}
+
+  if [[ -r "$antidote_file" ]]; then
+    source "$antidote_file"
+    antidote load "${ZDOTDIR:-$HOME}/.zsh_plugins.txt"
+  else
+    print -u2 "antidote is not installed; run the appropriate bootstrap script"
+  fi
+
+  if [[ -r "$spaceship_file" ]]; then
+    source "$spaceship_file"
+  else
+    print -u2 "spaceship is not installed; run the appropriate bootstrap script"
+  fi
+
+{{- if not (get . "server") }}
+  python_prefix="$(brew --prefix python 2>/dev/null)"
+  [[ -n "$python_prefix" ]] && add_to_path "$python_prefix/libexec/bin"
+{{- end }}
+}
+
+# Keep user-installed tools ahead of system defaults.
+add_to_path{{ if not (get . "server") }} /opt/homebrew/bin{{ end }} "$HOME/bin" "$HOME/go/bin"
+
+# Spaceship settings must be defined before the prompt plugin is loaded.
+SPACESHIP_USER_SHOW=true
+SPACESHIP_CHAR_SYMBOL_ROOT="#"
+load_shell_tools
+
+{{- if not (get . "server") }}
+# The Oh My Zsh pass plugin provides a completion function only.
+(( $+functions[compdef] )) && compdef _pass pass
+{{- end }}
+
+# Search the shared history for the current command line with the arrow keys.
+if [[ -n "${terminfo[kcuu1]:-}" && -n "${terminfo[kcud1]:-}" ]]; then
+  bindkey -M emacs "${terminfo[kcuu1]}" history-substring-search-up
+  bindkey -M emacs "${terminfo[kcud1]}" history-substring-search-down
+fi
+bindkey -M emacs '^[[A' history-substring-search-up
+bindkey -M emacs '^[[B' history-substring-search-down
+
+unset -f add_to_path load_shell_tools
+
+# Load user customizations only when Chezmoi has installed them.
+[[ -r "$HOME/bin/iterm2_integration.zsh" ]] && source "$HOME/bin/iterm2_integration.zsh"
+[[ -r "$HOME/.functions" ]] && source "$HOME/.functions"
+[[ -r "$HOME/.aliases" ]] && source "$HOME/.aliases"
+
+# Keep a large, deduplicated command history shared across shell sessions.
+HISTFILE="${ZDOTDIR:-$HOME}/.zsh_history"
+HISTSIZE=100000
+SAVEHIST=100000
+setopt append_history
+setopt extended_history
+setopt hist_expire_dups_first
+setopt hist_ignore_all_dups
+setopt hist_ignore_space
+setopt hist_reduce_blanks
+setopt hist_save_no_dups
+setopt hist_verify
+setopt inc_append_history
+setopt share_history
+
+# Oh My Zsh-compatible settings used by the selected plugins.
+ENABLE_CORRECTION=true
+HIST_STAMPS="dd.mm.yyyy"
+DISABLE_UNTRACKED_FILES_DIRTY="true"
+
+# Enable completion files written by Oh My Zsh plugins.
+if [[ -d "${ZSH_CACHE_DIR:-}/completions" ]]; then
+  fpath=("$ZSH_CACHE_DIR/completions" $fpath)
+fi
