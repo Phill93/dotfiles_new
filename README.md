@@ -12,7 +12,7 @@
 
 The server profile manages Zsh, Git, Tmux, aliases/functions, and iTerm2 shell
 integration. It intentionally excludes Neovim, GnuPG, SSH/assh, and all
-macOS-specific settings.
+workstation-specific settings.
 
 Apply the profile explicitly with Chezmoi:
 
@@ -27,12 +27,14 @@ To persist the selection, add the following to your Chezmoi configuration:
 server = true
 ```
 
-Then, on Debian, Ubuntu, or Arch, run:
+Then run the bootstrap script:
 
 ```sh
 ./install_server.sh
 ```
 
-The script installs `zsh`, `git`, `curl`, and `tmux` via the system package
-manager. Antidote and Spaceship are cloned from their upstream Git repositories
-into the current user's home directory; Homebrew is not used on Linux.
+On Debian, Ubuntu, and Arch, it installs `zsh`, `git`, `curl`, and `tmux` via
+the system package manager, then clones Antidote and Spaceship into the current
+user's home directory; Homebrew is not used on Linux. On macOS, it installs
+Homebrew when needed and installs the same tools plus Antidote and Spaceship
+with Homebrew.

@@ -10,6 +10,8 @@ readonly ITERM2_INTEGRATION_URL="https://iterm2.com/shell_integration/zsh"
 readonly ITERM2_INTEGRATION_FILE="$HOME/bin/iterm2_integration.zsh"
 
 dry_run=false
+platform=""
+brew_command=""
 
 usage() {
   printf 'Usage: %s [--dry-run]\n' "${0##*/}"
@@ -34,7 +36,39 @@ run() {
   fi
 }
 
-install_system_packages() {
+find_homebrew() {
+  local candidate
+
+  if command -v brew >/dev/null 2>&1; then
+    command -v brew
+    return
+  fi
+
+  for candidate in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [ -x "$candidate" ]; then
+      printf '%s\n' "$candidate"
+      return
+    fi
+  done
+
+  return 1
+}
+
+install_macos_packages() {
+  if ! brew_command="$(find_homebrew)"; then
+    if "$dry_run"; then
+      # shellcheck disable=SC2016 # Display the literal installer command in dry-run mode.
+      info '+ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+    else
+      /bin/bash -c "$(curl --fail --location --silent --show-error https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    fi
+    brew_command="$(find_homebrew)" || die 'Homebrew installation completed but brew was not found'
+  fi
+
+  run "$brew_command" install zsh git curl tmux antidote spaceship
+}
+
+install_linux_packages() {
   local package_manager
 
   if command -v apt-get >/dev/null 2>&1; then
@@ -57,6 +91,14 @@ install_system_packages() {
     pacman)
       run sudo pacman --sync --needed --noconfirm zsh git curl tmux
       ;;
+  esac
+}
+
+install_system_packages() {
+  case "$platform" in
+    darwin) install_macos_packages ;;
+    linux) install_linux_packages ;;
+    *) die "unsupported operating system: $platform" ;;
   esac
 }
 
@@ -86,6 +128,7 @@ build_antidote_static_file() {
   local plugins_file="$HOME/.zsh_plugins.txt"
   local static_file="$HOME/.zsh_plugins.zsh"
   local static_temporary_file
+  local antidote_file
 
   [ -r "$plugins_file" ] || die "missing $plugins_file; apply the Chezmoi server profile first"
 
@@ -94,10 +137,17 @@ build_antidote_static_file() {
     return
   fi
 
+  if [ "$platform" = darwin ]; then
+    antidote_file="$("$brew_command" --prefix antidote)/share/antidote/antidote.zsh"
+  else
+    antidote_file="$ANTIDOTE_DIRECTORY/antidote.zsh"
+  fi
+  [ -r "$antidote_file" ] || die "Antidote was not found at $antidote_file"
+
   static_temporary_file="$(mktemp "${static_file}.XXXXXX")"
   trap 'rm -f "$static_temporary_file"' RETURN
   zsh -dfc 'source "$1" && antidote bundle < "$2" > "$3"' \
-    zsh "$ANTIDOTE_DIRECTORY/antidote.zsh" "$plugins_file" "$static_temporary_file"
+    zsh "$antidote_file" "$plugins_file" "$static_temporary_file"
   mv "$static_temporary_file" "$static_file"
   trap - RETURN
 }
@@ -112,9 +162,17 @@ main() {
 
   [ "$(id -u)" -ne 0 ] || die 'run this script as the target user, not root'
 
+  case "$(uname -s)" in
+    Darwin) platform=darwin ;;
+    Linux) platform=linux ;;
+    *) die "unsupported operating system: $(uname -s)" ;;
+  esac
+
   install_system_packages
-  clone_or_update "$ANTIDOTE_REPOSITORY" "$ANTIDOTE_DIRECTORY"
-  clone_or_update "$SPACESHIP_REPOSITORY" "$SPACESHIP_DIRECTORY"
+  if [ "$platform" = linux ]; then
+    clone_or_update "$ANTIDOTE_REPOSITORY" "$ANTIDOTE_DIRECTORY"
+    clone_or_update "$SPACESHIP_REPOSITORY" "$SPACESHIP_DIRECTORY"
+  fi
   install_iterm2_integration
   build_antidote_static_file
   info 'Server tools are ready. Start zsh or run: exec zsh'

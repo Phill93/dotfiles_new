@@ -22,6 +22,6 @@ alias pass_priv="PASSWORD_STORE_DIR=~/.password_store_privat pass"
 {{- end }}
 
 {{/* mac related stuff */}}
-{{- if eq .chezmoi.os "darwin" }}
+{{- if and (not (get . "server")) (eq .chezmoi.os "darwin") }}
 alias beep="afplay -r 0.5 /System/Library/Sounds/Purr.aiff"
 {{- end}}

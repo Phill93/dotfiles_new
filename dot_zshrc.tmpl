@@ -11,7 +11,7 @@ add_to_path() {
 load_shell_tools() {
   local antidote_file spaceship_file python_prefix
 
-{{- if (get . "server") }}
+{{- if and (get . "server") (ne .chezmoi.os "darwin") }}
   antidote_file="$HOME/.antidote/antidote.zsh"
   spaceship_file="$HOME/.zsh/spaceship/spaceship.zsh"
 {{- else }}
@@ -44,7 +44,7 @@ load_shell_tools() {
 }
 
 # Keep user-installed tools ahead of system defaults.
-add_to_path{{ if not (get . "server") }} /opt/homebrew/bin{{ end }} "$HOME/bin" "$HOME/go/bin"
+add_to_path{{ if or (not (get . "server")) (eq .chezmoi.os "darwin") }} /opt/homebrew/bin /usr/local/bin{{ end }} "$HOME/bin" "$HOME/go/bin"
 
 # Spaceship settings must be defined before the prompt plugin is loaded.
 SPACESHIP_USER_SHOW=true
